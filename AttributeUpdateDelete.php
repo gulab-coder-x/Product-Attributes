@@ -49,3 +49,45 @@ class UpgradeData implements UpgradeDataInterface
         $setup->endSetup();
     }
 }
+
+
+// method 2
+<?php
+namespace Kinex\CustomApi\Setup;
+
+use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
+use Magento\Eav\Setup\EavSetupFactory;
+use Magento\Framework\Setup\ModuleContextInterface;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Setup\UpgradeDataInterface;
+
+class UpgradeData implements UpgradeDataInterface
+{
+    private $eavSetupFactory;
+
+    public function __construct(EavSetupFactory $eavSetupFactory)
+    {
+        $this->eavSetupFactory = $eavSetupFactory;
+    }
+    public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
+    {
+        $setup->startSetup();
+        if ($context->getVersion() && version_compare($context->getVersion(), '1.0.9') < 0) {
+
+            $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
+           
+            /* For Update Attribute */
+            // $newLabel = 'custom_ttribute';
+            // $eavSetup->updateAttribute(
+            //     \Magento\Catalog\Model\Product::ENTITY,
+            //     'sample_attribute',
+            //     'attribute_code',-->column name from database->it also change attribute code name
+            //     $newLabel
+            // );
+                        /* For Remove Attribute */
+                $eavSetup->removeAttribute(\Magento\Catalog\Model\Product::ENTITY, 'custom_ttribute');
+
+        }
+        $setup->endSetup();
+    }
+}
